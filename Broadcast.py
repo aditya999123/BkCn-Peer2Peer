@@ -4,19 +4,19 @@ NORMAL_PORT = 8002
 BROADCASTING_PORT = 8001
 bufferSize = 2048 # may be changed for faster responses (incase of smaller messages)
 
-ALIVE_OBJ = {
-	"message" : "",
+iMAliveMsg = "I'm alive"
+newTransactionMsg = "new Transaction"
+newBlockMsg = "new Block"
+
+IMALIVE_OBJ = {
+	"message" : iMAliveMsg,
 	"myIp" : ""
 	}
 
 NEW_BLOCK_OBJ = {
-	"message" : "",
+	"message" : newBlockMsg,
 	"block": ""
 	}
-
-imalive = "I'm alive"
-newTransaction = "new Transaction"
-newBlock = "new Block"
 
 class Broadcast:
 	def __init__(self):
@@ -37,11 +37,12 @@ class Broadcast:
 
 	def imAlive(self):
 		while True:
-			self.message(imalive_Obj%(imalive, self.myIp))
+			IMALIVE_OBJ['myIp'] = self.myIp
+			self.message(json.dumps(IMALIVE_OBJ))
 			# wait for 10s before broadcasting again
 			# to be able to break the thread with ctrl-c
 			for i in range(10):
-				sleep(1)
+				time.sleep(1)
 
 	def recieve_broadcast(self):
 		reciever_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -51,15 +52,15 @@ class Broadcast:
 			try:
 				result = select.select([reciever_socket], [], [], 2)
 				msg = result[0][0].recv(bufferSize)
-				# print msg
+				print msg
 				if msg:
 					obj = json.loads(msg)
 					try:
-						if(obj['message'] == imalive):
+						if(obj['message'] == iMAliveMsg):
 							if obj['myIp'] not in self.peers and obj['myIp'] != self.myIp:
 								self.peers.append(obj['myIp'])
 
-						if(obj['message'] == newTransaction):
+						if(obj['message'] == newTransactionMsg):
 							txnBuffer.append(Transaction(obj['senderPubKey'], obj['recieverPubKey'], obj['hashed']))
 					except:
 						print "message is not a json \n msg: ",msg
@@ -70,8 +71,8 @@ class Broadcast:
 	def broadcast_block(self, block):
 		for peer in self.peers:
 			# multi programming can be used in here(future plans)
-			block = json.dumps(block)
-			data = newBlock_obj%(newBlock, block)
+			NEW_BLOCK_OBJ['block'] = block
+			data = json.dumps(NEW_BLOCK_OBJ)
 			self.transmit_data(peer, data)
 
 	def transmit_data(self, Ip, data):

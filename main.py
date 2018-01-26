@@ -19,4 +19,3 @@ t3.start()
 while True:
 	msg = raw_input()
 	B.broadcast_block(msg)
-	print "len msg", len(msg)
