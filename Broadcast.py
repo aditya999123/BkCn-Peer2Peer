@@ -52,7 +52,7 @@ class Broadcast:
 			try:
 				result = select.select([reciever_socket], [], [], 2)
 				msg = result[0][0].recv(bufferSize)
-				print msg
+				# print msg
 				if msg:
 					obj = json.loads(msg)
 					try:
@@ -103,6 +103,7 @@ class Broadcast:
 		while True:
 			try:
 				result = select.select([reciever_socket],[],[],2)
+				# print "timed"
 				reciever_socket=result[0][0]
 				conn, addr = reciever_socket.accept()
 				if addr[0] != self.myIp:
@@ -111,6 +112,7 @@ class Broadcast:
 						data = conn.recv(bufferSize)
 						if not data: break
 						msg = msg + data
+					print "from: ",addr, msg
 					obj = json.loads(msg)
 			except Exception as e:
 				pass
