@@ -1,5 +1,5 @@
 import select, socket, time, json
-
+from Transaction import Transaction, txnBuffer
 NORMAL_PORT = 8002
 BROADCASTING_PORT = 8001
 bufferSize = 2048 # may be changed for faster responses (incase of smaller messages)
@@ -54,16 +54,19 @@ class Broadcast:
 				msg = result[0][0].recv(bufferSize)
 				# print msg
 				if msg:
-					obj = json.loads(msg)
 					try:
+						obj = json.loads(msg)
 						if(obj['message'] == iMAliveMsg):
 							if obj['myIp'] not in self.peers and obj['myIp'] != self.myIp:
 								self.peers.append(obj['myIp'])
 
 						if(obj['message'] == newTransactionMsg):
-							txnBuffer.append(Transaction(obj['senderPubKey'], obj['recieverPubKey'], obj['hashed']))
-					except:
-						print "message is not a json \n msg: ",msg
+							txn = Transaction(obj['senderPubKey'], obj['recieverPubKey'], obj['product'], obj['hashed'])
+							if txn.validated and txn.authenticated:
+								txnBuffer.append(txn)
+					except Exception as e:
+						print "msg: ",msg
+						print "e: ", str(e)
 			except:
 				# if no connection is avialable
 				pass
