@@ -13,9 +13,9 @@ class Txn:
 		self.authenticated = self.authenticate(senderPublicKey, recieverPublicKey, txnHash)
 		self.validated = self.validate(self.sender, self.product)
 
-	def authenticate(senderPubKey, recieverPubKey, hashed):
+	def authenticate(senderPubKey, recieverPubKey, product_hash, hashed):
 		vk = ecdsa.VerifyingKey.from_string(senderPubKey.decode('hex'), curve=ecdsa.SECP256k1)
-		return vk.verify(hashed.decode('hex'), senderPubKey + recieverPubKey)
+		return vk.verify(hashed.decode('hex'), senderPubKey + recieverPubKey + product_hash)
 
 	def validate(sender, product):
 		owner = {}
