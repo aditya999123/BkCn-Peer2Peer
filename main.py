@@ -20,9 +20,13 @@ t2 = threading.Thread(target = BR.recieve_data)
 # im alive broadcast
 t3 = threading.Thread(target = BR.imAlive)
 
+# im alive broadcast
+t4 = threading.Thread(target = BR.shareChain)
+
 t1.start()
 t2.start()
 t3.start()
+t4.start()
 
 while True:
 	# Broadcast.txnBuffer

@@ -7,11 +7,14 @@ from chain_utils import get_blocks, append_block
 txnBuffer = []
 NORMAL_PORT = 8002
 BROADCASTING_PORT = 8001
+DEDICATED_PORT = 8003
+
 bufferSize = 2048 # may be changed for faster responses (incase of smaller messages)
 
 iMAliveMsg = "I'm alive"
 newTransactionMsg = "new Transaction"
 newBlockMsg = "new Block"
+getBlocks = "get Block"
 
 IMALIVE_OBJ = {
 	"message" : iMAliveMsg,
@@ -22,6 +25,10 @@ NEW_BLOCK_OBJ = {
 	"message" : newBlockMsg,
 	"block": ""
 	}
+
+BLOCKS = {
+	"blocks":[]
+}
 
 class Broadcast:
 	def __init__(self):
@@ -140,3 +147,21 @@ class Broadcast:
 									txnBuffer.remove(txn)
 			except Exception as e:
 				pass
+
+	def shareChain(self):
+		serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		serversocket.bind(('', DEDICATED_PORT))
+		# serversocket.setblocking(0)
+		serversocket.listen(2)
+		while True:
+			print "1"
+			conn, addr = serversocket.accept()
+			# blocks = []
+			# for block in get_blocks():
+			# 	blocks.append()
+			data  = {
+				"blocks":get_blocks(True)
+			}
+			# print data
+			conn.send(json.dumps(data))
+			conn.close()
