@@ -1,5 +1,8 @@
+from types import SimpleNamespace as Namespace
+
 CHAIN_DATA = 'chain.json'
 DELIMITER = "<<<--EOB-->>>"
+from Block import Block
 
 class Chain:
 	def __init__(self):
@@ -16,8 +19,8 @@ class Chain:
 
 		blocks = []
 		for block in content:
-			blocks.append(json.loads(block))
-
+			blocks.append(json.loads(block, object_hook=lambda d: Namespace(**d)))
+			# need serious testing
 		return blocks
 
 	def append_block(self, block):
@@ -27,4 +30,5 @@ class Chain:
 
 
 	def gen_genesis_block(self):
-		
+		B = Block()
+		B.pow()

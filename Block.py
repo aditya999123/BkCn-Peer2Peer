@@ -11,10 +11,14 @@ class Block:
         return json.dumps(self, default=lambda o: o.__dict__, 
             sort_keys=True, indent=4)
 
-	def __init__(self, txns, previous_block):
+	def __init__(self, txns = [], previous_block = None):
 		self.txns = txns
-		self.previous_block_hash = previous_block.hashed
-		self.block_number = previous_block.block_number + 1
+		if previous_block is not None:
+			self.previous_block_hash = previous_block.hashed
+			self.block_number = previous_block.block_number + 1
+		else :
+			self.previous_block_hash = self.gen_hash('genesis')
+			self.block_number = 0
 		self.time = time.time.now()
 	
 	def generate_txns_hash(self, block=None):
