@@ -16,6 +16,7 @@ def release_lock():
 
 class Chain:
 	def __init__(self):
+		print "init"
 		self.blocks = self.get_blocks()
 		if len(self.blocks) == 0:
 			self.append_block(self.gen_genesis_block())
@@ -23,13 +24,18 @@ class Chain:
 	def get_blocks(self):
 		content = ''
 		with open(CHAIN_DATA) as f:
-			content = f.readlines()
-		content = [x.strip() for x in content] 
-		content = content.join('').split(DELIMITER)
+			content = f.read()
+		print content
+		content = content.replace('\n','') 
+		print content
+
+		content = content.split(DELIMITER)
+		print content
 
 		blocks = []
 		for block in content:
-			blocks.append(stringToObj(block))
+			if block != "":
+				blocks.append(stringToObj(block))
 			# need serious testing
 		return blocks
 
@@ -40,6 +46,7 @@ class Chain:
 
 
 	def gen_genesis_block(self):
+		print"here"
 		B = Block()
 		B.pow()
 		return B

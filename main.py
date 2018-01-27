@@ -3,7 +3,11 @@ from Broadcast import Broadcast
 from Chain import Chain, get_lock, release_lock
 from Transaction import txnBuffer
 from Block import block_size, Block
+
+CH = Chain()
+
 BR = Broadcast()
+
 
 # broadcast reciever
 t1 = threading.Thread(target = BR.recieve_broadcast)
@@ -17,8 +21,6 @@ t3 = threading.Thread(target = BR.imAlive)
 t1.start()
 t2.start()
 t3.start()
-
-CH = Chain()
 
 while True:
 	if len(txnBuffer) >= block_size:

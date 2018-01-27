@@ -1,6 +1,6 @@
 from general import assert_valid
 from Transaction import Transaction
-import hashlib, time
+import hashlib, datetime, json
 
 block_size = 2
 
@@ -16,7 +16,7 @@ class Block:
 		else :
 			self.previous_block_hash = self.gen_hash('genesis')
 			self.block_number = 0
-		self.time = time.time.now()
+		self.time = str(datetime.datetime.now())
 	
 	def generate_txns_hash(self, block=None):
 		if block is not None:
