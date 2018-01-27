@@ -2,16 +2,24 @@ import ecdsa, hashlib
 
 txnBuffer = []
 
-class Txn:
+
+class Transaction:
+	def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__, 
+            sort_keys=True, indent=4)
+
 	def __init__(self, senderPublicKey, recieverPublicKey, product, txnHash):
 		self.sender = senderPublicKey
 		self.reciever = recieverPublicKey
 		self.product = product
 		self.txnHash = txnHash
 		self.nonce = None
-
 		self.authenticated = self.authenticate(senderPublicKey, recieverPublicKey, txnHash)
-		self.validated = self.validate(self.sender, self.product)
+
+		if senderPublicKey != recieverPublicKey:
+			self.validated = self.validate(self.sender, self.product)
+		else :
+			self.validated = True
 
 	def authenticate(senderPubKey, recieverPubKey, product_hash, hashed):
 		vk = ecdsa.VerifyingKey.from_string(senderPubKey.decode('hex'), curve=ecdsa.SECP256k1)
