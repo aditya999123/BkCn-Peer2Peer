@@ -17,7 +17,16 @@ class Block:
 			self.previous_block_hash = self.gen_hash('genesis')
 			self.block_number = 0
 		self.time = str(datetime.datetime.now())
-	
+
+	def __jsonToObj__(self, block):
+		self.previous_block_hash = block['previous_block_hash']
+		self.block_number = block['block_number']
+		self.hashed = block['hashed']
+		self.nonce = block['nonce']
+		self.pow = block['pow']
+		self.time = block['time']
+		self.txns = block['txns']
+
 	def generate_txns_hash(self, block=None):
 		if block is None:
 			block = self

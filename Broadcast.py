@@ -82,7 +82,7 @@ class Broadcast:
 	def broadcast_block(self, block):
 		for peer in self.peers:
 			# multi programming can be used in here(future plans)
-			NEW_BLOCK_OBJ['block'] = block
+			NEW_BLOCK_OBJ['block'] = block.toJSON()
 			data = json.dumps(NEW_BLOCK_OBJ)
 			self.transmit_data(peer, data)
 
@@ -128,12 +128,13 @@ class Broadcast:
 					if obj.message == newBlockMsg:
 						block = obj.block
 						B = Block()
+						B.__jsonToObj__(block)
 						get_lock()
-						if B.validate(block, get_blocks()[-1]):
-							append_block(block)
+						if B.validate(B, get_blocks()[-1]):
+							append_block(B)
 							release_lock()
-							B.broadcast_block(block)
-							for txn in block.txns:
+							B.broadcast_block(B)
+							for txn in B.txns:
 								if txn in txnBuffer:
 									txnBuffer.remove(txn)
 			except Exception as e:

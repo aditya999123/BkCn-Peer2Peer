@@ -34,5 +34,6 @@ while True:
 		get_lock()
 		if B.validate(B, get_blocks()[-1]):
 			append_block(B)
+			print "I solved It"
 			release_lock()
 			BR.broadcast_block(B)
