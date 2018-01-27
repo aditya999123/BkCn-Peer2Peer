@@ -1,49 +1,27 @@
 from general import stringToObj
-
-CHAIN_DATA = 'chain.json'
-DELIMITER = "<<<--EOB-->>>"
+from chain_utils import get_blocks,append_block
 from Block import Block
 
 semaphore = 1
 
 def get_lock():
+	global semaphore
 	while semaphore <= 0:
 		pass
 	semaphore = semaphore - 1
 
 def release_lock():
+	global semaphore
 	semaphore = semaphore + 1
 
 class Chain:
 	def __init__(self):
 		print "init"
-		self.blocks = self.get_blocks()
-		if len(self.blocks) == 0:
-			self.append_block(self.gen_genesis_block())
+		if len(get_blocks()) == 0:
+			self.append(self.gen_genesis_block())
 
-	def get_blocks(self):
-		content = ''
-		with open(CHAIN_DATA) as f:
-			content = f.read()
-		print content
-		content = content.replace('\n','') 
-		print content
-
-		content = content.split(DELIMITER)
-		print content
-
-		blocks = []
-		for block in content:
-			if block != "":
-				blocks.append(stringToObj(block))
-			# need serious testing
-		return blocks
-
-	def append_block(self, block):
-		self.blocks.append(block)
-		with open(CHAIN_DATA, "a") as chain:
-			chain.write("%s\n%s\n"%(block.toJSON(),DELIMITER))
-
+	def append(self, block):
+		append_block(block)
 
 	def gen_genesis_block(self):
 		print"here"

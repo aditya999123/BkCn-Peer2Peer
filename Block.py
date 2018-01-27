@@ -19,13 +19,22 @@ class Block:
 		self.time = str(datetime.datetime.now())
 	
 	def generate_txns_hash(self, block=None):
-		if block is not None:
-			return hashlib.sha256(block.toJSON()).digest().encode('hex')
+		if block is None:
+			block = self
+
+		to_be_hashed = {
+			"txns":str(block.txns),
+			"time":block.time,
+			"block_number":block.block_number,
+			"previous_block_hash":block.previous_block_hash
+		}
 		
-		return hashlib.sha256(self.toJSON()).digest().encode('hex')
+		to_be_hashed = json.dumps(to_be_hashed)
+		return hashlib.sha256(to_be_hashed).digest().encode('hex')
 
 	def pow(self):
-		self.hashed = self.generate_txns_hash()
+		hashed = self.generate_txns_hash()
+		self.hashed = hashed
 		self.pow = ''
 		nonce = -1
 		while self.pow[:4] != '0000':
@@ -40,16 +49,16 @@ class Block:
 
 		return hashlib.sha256(init).digest().encode('hex')
 
-	def validate(block, previous_block):
+	def validate(self, block, previous_block):
 		try:
-			assert_valid(previous_block.hashed == block.previous_block_hash)
-			assert_valid(previous_block.block_number == block.block_number + 1)
+			assert_valid(previous_block.hashed == block.previous_block_hash, "prv bloc hash")
+			assert_valid(previous_block.block_number + 1 == block.block_number, "block num")
 			for txn in block.txns:
-				nTxn = Transaction(txn.senderPublicKey, txn.recieverPublicKey, txn.product, txn.txnHash)
-				assert_valid(nTxn.authenticated)
-				assert_valid(nTxn.validated)
-			assert_valid(self.generate_txns_hash(block) == block.hashed)
-			assert_valid(self.gen_hash(block.hashed, block.nonce) == block.pow)
+				nTxn = Transaction(txn.sender_public_key, txn.reciever_public_key, txn.product_hash, txn.hashed)
+				assert_valid(nTxn.authenticated, "auth")
+				assert_valid(nTxn.validated, "valid")
+			assert_valid(self.generate_txns_hash(block) == block.hashed, "hash")
+			assert_valid(self.gen_hash(block.hashed, block.nonce) == block.pow, "pow")
 
 			return True
 		except Exception as e:

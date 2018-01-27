@@ -2,7 +2,8 @@ import select, socket, time, json
 from Transaction import Transaction, txnBuffer
 from general import stringToObj
 from Block import Block
-from Chain import Chain, get_lock, release_lock
+from Chain import get_lock, release_lock
+from chain_utils import get_blocks, append_block
 
 NORMAL_PORT = 8002
 BROADCASTING_PORT = 8001
@@ -65,8 +66,10 @@ class Broadcast:
 								self.peers.append(obj.myIp)
 
 						if(obj.message == newTransactionMsg):
-							txn = Transaction(obj.senderPubKey, obj.recieverPubKey, obj.product, obj.hashed)
+							print "transaction recieved"
+							txn = Transaction(obj.sender_public_key, obj.reciever_public_key, obj.product_hash, obj.hashed)
 							if txn.validated and txn.authenticated:
+								print "validated"
 								txnBuffer.append(txn)
 					except Exception as e:
 						print "msg: ",msg
@@ -125,10 +128,9 @@ class Broadcast:
 					if obj.message == newBlockMsg:
 						block = obj.block
 						B = Block()
-						CH = chain()
 						get_lock()
-						if B.validate(block, CH.blocks[-1]):
-							CH.append_block(block)
+						if B.validate(block, get_blocks()[-1]):
+							append_block(block)
 							release_lock()
 							B.broadcast_block(block)
 							for txn in block.txns:
