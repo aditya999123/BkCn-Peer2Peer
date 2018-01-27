@@ -2,6 +2,7 @@ import ecdsa, hashlib
 
 txnBuffer = []
 
+
 class Transaction:
 	def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, 
@@ -13,9 +14,8 @@ class Transaction:
 		self.product = product
 		self.txnHash = txnHash
 		self.nonce = None
-
 		self.authenticated = self.authenticate(senderPublicKey, recieverPublicKey, txnHash)
-		
+
 		if senderPublicKey != recieverPublicKey:
 			self.validated = self.validate(self.sender, self.product)
 		else :

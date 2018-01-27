@@ -1,5 +1,9 @@
 import select, socket, time, json
+<<<<<<< HEAD
 from Transaction import Transaction, txnBuffer
+=======
+
+>>>>>>> master
 NORMAL_PORT = 8002
 BROADCASTING_PORT = 8001
 bufferSize = 2048 # may be changed for faster responses (incase of smaller messages)
@@ -67,6 +71,7 @@ class Broadcast:
 					except Exception as e:
 						print "msg: ",msg
 						print "e: ", str(e)
+
 			except:
 				# if no connection is avialable
 				pass
