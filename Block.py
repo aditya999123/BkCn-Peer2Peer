@@ -1,15 +1,12 @@
-import hashlib
-import time
+from general import assert_valid
 from Transaction import Transaction
+import hashlib, time
 
-def assert_valid(cond):
-	if cond == False:
-		raise Exception('invalid block')
+block_size = 2
 
 class Block:
 	def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__, 
-            sort_keys=True, indent=4)
+		return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
 	def __init__(self, txns = [], previous_block = None):
 		self.txns = txns

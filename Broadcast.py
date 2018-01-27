@@ -1,9 +1,9 @@
 import select, socket, time, json
-<<<<<<< HEAD
 from Transaction import Transaction, txnBuffer
-=======
+from general import stringToObj
+from Block import Block
+from Chain import Chain, get_lock, release_lock
 
->>>>>>> master
 NORMAL_PORT = 8002
 BROADCASTING_PORT = 8001
 bufferSize = 2048 # may be changed for faster responses (incase of smaller messages)
@@ -59,13 +59,13 @@ class Broadcast:
 				# print msg
 				if msg:
 					try:
-						obj = json.loads(msg)
-						if(obj['message'] == iMAliveMsg):
-							if obj['myIp'] not in self.peers and obj['myIp'] != self.myIp:
-								self.peers.append(obj['myIp'])
+						obj = stringToObj(msg)
+						if(obj.message == iMAliveMsg):
+							if obj.myIp not in self.peers and obj.myIp != self.myIp:
+								self.peers.append(obj.myIp)
 
-						if(obj['message'] == newTransactionMsg):
-							txn = Transaction(obj['senderPubKey'], obj['recieverPubKey'], obj['product'], obj['hashed'])
+						if(obj.message == newTransactionMsg):
+							txn = Transaction(obj.senderPubKey, obj.recieverPubKey, obj.product, obj.hashed)
 							if txn.validated and txn.authenticated:
 								txnBuffer.append(txn)
 					except Exception as e:
@@ -121,6 +121,18 @@ class Broadcast:
 						if not data: break
 						msg = msg + data
 					print "from: ",addr, msg
-					obj = json.loads(msg)
+					obj = stringToObj(msg)
+					if obj.message == newBlockMsg:
+						block = obj.block
+						B = Block()
+						CH = chain()
+						get_lock()
+						if B.validate(block, CH.blocks[-1]):
+							CH.append_block(block)
+							release_lock()
+							B.broadcast_block(block)
+							for txn in block.txns:
+								if txn in txnBuffer:
+									txnBuffer.remove(txn)
 			except Exception as e:
 				pass

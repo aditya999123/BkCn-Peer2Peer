@@ -1,8 +1,18 @@
-from types import SimpleNamespace as Namespace
+from general import stringToObj
 
 CHAIN_DATA = 'chain.json'
 DELIMITER = "<<<--EOB-->>>"
 from Block import Block
+
+semaphore = 1
+
+def get_lock():
+	while semaphore <= 0:
+		pass
+	semaphore = semaphore - 1
+
+def release_lock():
+	semaphore = semaphore + 1
 
 class Chain:
 	def __init__(self):
@@ -19,7 +29,7 @@ class Chain:
 
 		blocks = []
 		for block in content:
-			blocks.append(json.loads(block, object_hook=lambda d: Namespace(**d)))
+			blocks.append(stringToObj(block))
 			# need serious testing
 		return blocks
 
@@ -32,3 +42,4 @@ class Chain:
 	def gen_genesis_block(self):
 		B = Block()
 		B.pow()
+		return B
