@@ -1,8 +1,9 @@
-import threading, json
+import threading, json, time
 from Broadcast import Broadcast
+import Broadcast as bd
 from Chain import Chain, get_lock, release_lock
 from chain_utils import get_blocks, append_block
-from Transaction import txnBuffer
+# from Transaction import Broadcast.txnBuffer
 from Block import block_size, Block
 
 CH = Chain()
@@ -24,16 +25,20 @@ t2.start()
 t3.start()
 
 while True:
-	# print "length:", len(txnBuffer)
-	if len(txnBuffer) >= block_size:
-		txns = txnBuffer[:block_size]
-		txnBuffer = txnBuffer[block_size:]
+	# Broadcast.txnBuffer
+	# print "length:", len(Broadcast.txnBuffer)
+	# print "len :",len(bd.txnBuffer)
+	time.sleep(1)	
+	if len(bd.txnBuffer) >= block_size:
+		txns = bd.txnBuffer[:block_size]
+		bd.txnBuffer = bd.txnBuffer[block_size:]
 		# print "bbbbbbbbbblock: ", get_blocks()
 		B = Block(txns, get_blocks()[-1])
 		B.pow()
-		get_lock()
+		# get_lock()
 		if B.validate(B, get_blocks()[-1]):
 			append_block(B)
 			print "I solved It"
-			release_lock()
+			# release_lock()
 			BR.broadcast_block(B)
+			print "Broadcasted"

@@ -1,10 +1,10 @@
 import select, socket, time, json
-from Transaction import Transaction, txnBuffer
+from Transaction import Transaction
 from general import stringToObj
 from Block import Block
 from Chain import get_lock, release_lock
 from chain_utils import get_blocks, append_block
-
+txnBuffer = []
 NORMAL_PORT = 8002
 BROADCASTING_PORT = 8001
 bufferSize = 2048 # may be changed for faster responses (incase of smaller messages)
@@ -50,6 +50,7 @@ class Broadcast:
 				time.sleep(1)
 
 	def recieve_broadcast(self):
+		global txnBuffer
 		reciever_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 		reciever_socket.bind(('<broadcast>', BROADCASTING_PORT))
 		reciever_socket.setblocking(0)
